@@ -1,5 +1,6 @@
 streamlit
-rembg
+rembg==2.0.72
 pillow
 numpy
 opencv-python-headless
+onnxruntime
