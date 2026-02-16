@@ -4,7 +4,7 @@ import numpy as np
 import cv2
 import io
 import time
-from rembg import remove
+from rembg import remove, new_session
 
 # ---------------------------------------------------
 # PAGE CONFIG
@@ -74,18 +74,16 @@ def remove_white_background(img, threshold=245):
     np_img[:, :, 3] = mask
     return Image.fromarray(np_img)
 
-
 # ---------------------------------------------------
-# AI SESSION CACHE (LIGHTWEIGHT MODEL)
+# AI SESSION CACHE
 # ---------------------------------------------------
 
 @st.cache_resource
 def load_session(model_name="u2netp"):
     return new_session(model_name)
 
-
 # ---------------------------------------------------
-# AI BACKGROUND REMOVAL (LIGHTWEIGHT SAFE MODE)
+# AI BACKGROUND REMOVAL
 # ---------------------------------------------------
 
 def remove_ai_background(img, model_name="u2netp"):
@@ -95,7 +93,8 @@ def remove_ai_background(img, model_name="u2netp"):
         img,
         session=session
     )
-    return output
+
+    return output.convert("RGBA")
 
 # ---------------------------------------------------
 # AUTO CROP
@@ -174,11 +173,13 @@ if uploaded_file:
 
         with st.spinner("Processing..."):
 
+            # Background removal
             if image_type == "Logo / Text Image":
                 processed = remove_white_background(original)
             else:
-                processed = remove_ai_background(original, "u2netp")
+                processed = remove_ai_background(original)
 
+            # Optional edits
             if auto_crop:
                 processed = crop_transparent(processed)
 
