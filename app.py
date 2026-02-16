@@ -4,7 +4,7 @@ import numpy as np
 import cv2
 import io
 import time
-from rembg import remove, new_session
+from rembg import remove
 
 # ---------------------------------------------------
 # PAGE CONFIG
@@ -42,24 +42,21 @@ bg_color = st.sidebar.color_picker("Background Color", "#FFFFFF")
 
 bg_upload = None
 if replace_mode == "Custom Image":
-    bg_upload = st.sidebar.file_uploader("Upload Background Image", type=["png", "jpg", "jpeg"])
+    bg_upload = st.sidebar.file_uploader(
+        "Upload Background Image",
+        type=["png", "jpg", "jpeg"]
+    )
 
 blur_bg = st.sidebar.checkbox("Blur Background")
-
 auto_crop = st.sidebar.checkbox("Auto Crop Subject")
-
 add_shadow = st.sidebar.checkbox("Add Drop Shadow")
 
-download_format = st.sidebar.selectbox("Download Format", ["PNG", "JPG", "WEBP"])
+download_format = st.sidebar.selectbox(
+    "Download Format",
+    ["PNG", "JPG", "WEBP"]
+)
+
 download_quality = st.sidebar.slider("Download Quality", 70, 100, 100)
-
-# ---------------------------------------------------
-# AI SESSION CACHE (LIGHTWEIGHT MODEL)
-# ---------------------------------------------------
-
-@st.cache_resource
-def load_session(model):
-    return new_session(model)
 
 # ---------------------------------------------------
 # LOGO MODE (WHITE REMOVAL)
@@ -78,20 +75,12 @@ def remove_white_background(img, threshold=245):
     return Image.fromarray(np_img)
 
 # ---------------------------------------------------
-# AI MODE (USING LIGHTWEIGHT u2netp)
+# AI BACKGROUND REMOVAL (LIGHTWEIGHT SAFE MODE)
 # ---------------------------------------------------
 
-def remove_ai_background(img, model_name):
-    session = load_session(model_name)
-
-    output = remove(
-        img,
-        session=session,
-        alpha_matting=True,
-        alpha_matting_foreground_threshold=200,
-        alpha_matting_background_threshold=5,
-        alpha_matting_erode_structure_size=3
-    )
+def remove_ai_background(img):
+    # No alpha matting (prevents cloud crash)
+    output = remove(img)
     return output
 
 # ---------------------------------------------------
@@ -111,6 +100,7 @@ def crop_transparent(image):
 def add_shadow_effect(image):
     shadow = image.copy().convert("RGBA")
     shadow = shadow.filter(ImageFilter.GaussianBlur(10))
+
     bg = Image.new("RGBA", image.size, (0, 0, 0, 0))
     bg.paste(shadow, (10, 10), shadow)
     bg.paste(image, (0, 0), image)
@@ -135,19 +125,24 @@ def replace_with_image(fg, bg_img):
 
 def export_image(image, fmt, quality):
     buf = io.BytesIO()
+
     if fmt == "PNG":
         image.save(buf, format="PNG")
     elif fmt == "JPG":
         image.convert("RGB").save(buf, format="JPEG", quality=quality)
     elif fmt == "WEBP":
         image.save(buf, format="WEBP", quality=quality)
+
     return buf.getvalue()
 
 # ---------------------------------------------------
 # FILE UPLOAD
 # ---------------------------------------------------
 
-uploaded_file = st.file_uploader("Upload Image", type=["png", "jpg", "jpeg"])
+uploaded_file = st.file_uploader(
+    "Upload Image",
+    type=["png", "jpg", "jpeg"]
+)
 
 if uploaded_file:
 
@@ -167,10 +162,8 @@ if uploaded_file:
 
             if image_type == "Logo / Text Image":
                 processed = remove_white_background(original)
-            elif image_type == "Human Photo":
-                processed = remove_ai_background(original, "u2netp")
             else:
-                processed = remove_ai_background(original, "u2netp")
+                processed = remove_ai_background(original)
 
             if auto_crop:
                 processed = crop_transparent(processed)
@@ -181,10 +174,13 @@ if uploaded_file:
             if replace_bg:
                 if replace_mode == "Solid Color":
                     processed = replace_with_color(processed, bg_color)
+
                 elif replace_mode == "Custom Image" and bg_upload:
                     bg_img = Image.open(bg_upload)
+
                     if blur_bg:
                         bg_img = bg_img.filter(ImageFilter.GaussianBlur(8))
+
                     processed = replace_with_image(processed, bg_img)
 
         end = time.time()

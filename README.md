@@ -17,4 +17,4 @@ Features:
 - Processing time measurement
 
 Run:
-streamlit run app.py
+python -m streamlit run app.py
