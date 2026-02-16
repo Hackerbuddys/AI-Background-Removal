@@ -54,7 +54,7 @@ download_format = st.sidebar.selectbox("Download Format", ["PNG", "JPG", "WEBP"]
 download_quality = st.sidebar.slider("Download Quality", 70, 100, 100)
 
 # ---------------------------------------------------
-# AI SESSION CACHE
+# AI SESSION CACHE (LIGHTWEIGHT MODEL)
 # ---------------------------------------------------
 
 @st.cache_resource
@@ -78,7 +78,7 @@ def remove_white_background(img, threshold=245):
     return Image.fromarray(np_img)
 
 # ---------------------------------------------------
-# AI MODE
+# AI MODE (USING LIGHTWEIGHT u2netp)
 # ---------------------------------------------------
 
 def remove_ai_background(img, model_name):
@@ -168,9 +168,9 @@ if uploaded_file:
             if image_type == "Logo / Text Image":
                 processed = remove_white_background(original)
             elif image_type == "Human Photo":
-                processed = remove_ai_background(original, "u2net_human_seg")
+                processed = remove_ai_background(original, "u2netp")
             else:
-                processed = remove_ai_background(original, "u2net")
+                processed = remove_ai_background(original, "u2netp")
 
             if auto_crop:
                 processed = crop_transparent(processed)
