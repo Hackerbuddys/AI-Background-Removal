@@ -78,7 +78,7 @@ def remove_white_background(img, threshold=245):
 # AI BACKGROUND REMOVAL (LIGHTWEIGHT SAFE MODE)
 # ---------------------------------------------------
 
-def remove_ai_background(img, model_name):
+def remove_ai_background(img, model_name="u2netp"):
     session = load_session(model_name)
 
     output = remove(
@@ -167,7 +167,7 @@ if uploaded_file:
             if image_type == "Logo / Text Image":
                 processed = remove_white_background(original)
             else:
-                processed = remove_ai_background(original)
+                processed = remove_ai_background(original, "u2netp")
 
             if auto_crop:
                 processed = crop_transparent(processed)
