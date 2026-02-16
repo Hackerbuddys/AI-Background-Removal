@@ -78,9 +78,13 @@ def remove_white_background(img, threshold=245):
 # AI BACKGROUND REMOVAL (LIGHTWEIGHT SAFE MODE)
 # ---------------------------------------------------
 
-def remove_ai_background(img):
-    # No alpha matting (prevents cloud crash)
-    output = remove(img)
+def remove_ai_background(img, model_name):
+    session = load_session(model_name)
+
+    output = remove(
+        img,
+        session=session
+    )
     return output
 
 # ---------------------------------------------------
