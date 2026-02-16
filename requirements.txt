@@ -1,7 +1,5 @@
 streamlit==1.32.0
 rembg==2.0.50
-pillow
+pillow==10.2.0
 numpy==1.26.4
 onnxruntime==1.17.3
-opencv-python-headless
-streamlit-image-comparison
