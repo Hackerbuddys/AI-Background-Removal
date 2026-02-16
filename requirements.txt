@@ -1,7 +1,7 @@
-streamlit
-rembg
+streamlit==1.32.0
+rembg==2.0.50
 pillow
-numpy
+numpy==1.26.4
+onnxruntime==1.17.3
 opencv-python-headless
-onnxruntime
 streamlit-image-comparison
