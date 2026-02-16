@@ -74,6 +74,16 @@ def remove_white_background(img, threshold=245):
     np_img[:, :, 3] = mask
     return Image.fromarray(np_img)
 
+
+# ---------------------------------------------------
+# AI SESSION CACHE (LIGHTWEIGHT MODEL)
+# ---------------------------------------------------
+
+@st.cache_resource
+def load_session(model_name="u2netp"):
+    return new_session(model_name)
+
+
 # ---------------------------------------------------
 # AI BACKGROUND REMOVAL (LIGHTWEIGHT SAFE MODE)
 # ---------------------------------------------------
