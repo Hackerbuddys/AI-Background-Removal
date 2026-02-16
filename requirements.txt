@@ -2,6 +2,6 @@ streamlit
 rembg
 pillow
 numpy
-opencv-python
+opencv-python-headless
 onnxruntime
 streamlit-image-comparison
